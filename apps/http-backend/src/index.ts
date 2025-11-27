@@ -25,6 +25,14 @@ app.post("/signup", (req, res) => {
 })
 
 app.post("/signin", (req, res) => {
+
+    const data = SignInSchema.safeParse(req.body);
+
+    if(!data.success) {
+        return res.json({
+            message: "Incorrect Input"
+        })
+    }
     const userId = 1;
     const token = jwt.sign({
         userId
@@ -36,6 +44,13 @@ app.post("/signin", (req, res) => {
 })
 
 app.post("/room/:id", middleware, (req, res) => {
+    const data = CreateRoomSchema.safeParse(req.body);
+
+    if(!data.success) {
+        return res.json({
+            message: "Incorrect Input"
+        })
+    }
     res.json({
         roomId: 123
     })
