@@ -1,6 +1,8 @@
 import express from "express";
-import { JWT_SECRET_KEY } from "./config";
+import { JWT_SECRET_KEY } from "@repo/backend-common/config";
 import { middleware } from "./auth/middleware";
+import {CreateUserSchema, SignInSchema, CreateRoomSchema} from "@repo/common/types";
+
 const jwt = require("jsonwebtoken");
 
 
@@ -8,7 +10,13 @@ const jwt = require("jsonwebtoken");
 const app = express();
 
 app.post("/signup", (req, res) => {
-    const {firstName, lastName, password, emailId} = req.body;
+    const data = CreateUserSchema.safeParse(req.body);
+
+    if(!data.success) {
+        return res.json({
+            message: "Incorrect Input"
+        })
+    }
 
     res.json({
         userId: "123"

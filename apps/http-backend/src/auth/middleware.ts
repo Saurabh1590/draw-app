@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET_KEY } from "../config";
+import { JWT_SECRET_KEY } from "@repo/backend-common/config";
 
 export function middleware(req: Request, res: Response, next: NextFunction) {
-    
+
   interface JWTPayload {
     userId: string;
   }
