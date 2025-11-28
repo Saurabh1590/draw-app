@@ -10,33 +10,34 @@ import { prismaClient } from "@repo/database/client";
 const jwt = require("jsonwebtoken");
 
 const app = express();
+app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   const parsedData = CreateUserSchema.safeParse(req.body);
 
   if (!parsedData.success) {
+    console.log(parsedData.error);
     return res.json({
       message: "Incorrect Input",
     });
   }
 
-  try{
+  try {
     const User = await prismaClient.user.create({
-    data: {
-      email: parsedData.data?.email,
-      password: parsedData.data?.password,
-      name: parsedData.data?.name,
-    },
-  });
-  res.json({
-    userId: "123",
-  });
+      data: {
+        email: parsedData.data?.email,
+        password: parsedData.data?.password,
+        name: parsedData.data?.name,
+      },
+    });
+    res.json({
+      userId: "123",
+    });
   } catch (error) {
     res.status(411).json({
-        message: "User already exists with the username"
-    })
+      message: "User already exists with the username",
+    });
   }
-  
 });
 
 app.post("/signin", (req, res) => {
