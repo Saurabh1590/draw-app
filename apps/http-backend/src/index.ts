@@ -7,6 +7,7 @@ import {
   CreateRoomSchema,
 } from "@repo/common/types";
 import jwt from "jsonwebtoken";
+import { prisma } from "@repo/db/client";
 
 const app = express();
 app.use(express.json());
@@ -22,19 +23,31 @@ app.post("/signup", async (req, res) => {
   }
 
   try {
-    // const user = await prisma.user.create({
-    //   data: {
-    //     email: parsedData.data?.email,
-    //     password: parsedData.data?.password,
-    //     name: parsedData.data?.name,
-    //   },
-    // });
-    res.json({
-      userId: 123,
+    const user = await prisma.user.create({
+      data: {
+        email: parsedData.data?.email,
+        password: parsedData.data?.password,
+        name: parsedData.data?.name,
+      },
     });
-  } catch (error) {
-    res.status(411).json({
-      message: "User already exists with the username",
+    console.log("User created:", user.id);
+    res.json({
+      userId: user.id,
+    });
+  } catch (error: any) {
+    console.error("Signup error:", error);
+
+    // Check if it's a unique constraint violation (duplicate email)
+    if (error.code === 'P2002') {
+      return res.status(409).json({
+        message: "User already exists with this email",
+      });
+    }
+
+    // Database connection or other errors
+    res.status(500).json({
+      message: "Error creating user. Please check database connection.",
+      error: error.message,
     });
   }
 });
