@@ -11,7 +11,9 @@
     "@types/jsonwebtoken": "^9.0.10",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "@repo/db": "workspace:*"
+    "@repo/db": "workspace:*",
+    "bcrypt": "^5.1.1",
+    "@types/bcrypt": "^5.0.2"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

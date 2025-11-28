@@ -8,6 +8,7 @@ import {
 } from "@repo/common/types";
 import jwt from "jsonwebtoken";
 import { prisma } from "@repo/db/client";
+import bcrypt from "bcrypt";
 
 const app = express();
 app.use(express.json());
@@ -23,10 +24,13 @@ app.post("/signup", async (req, res) => {
   }
 
   try {
+    // Hash the password before storing
+    const hashedPassword = await bcrypt.hash(parsedData.data?.password || "", 10);
+
     const user = await prisma.user.create({
       data: {
         email: parsedData.data?.email,
-        password: parsedData.data?.password,
+        password: hashedPassword,
         name: parsedData.data?.name,
       },
     });
@@ -52,25 +56,45 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/signin", (req, res) => {
-  const data = SignInSchema.safeParse(req.body);
+app.post("/signin", async (req, res) => {
+  const parsedData = SignInSchema.safeParse(req.body);
 
-  if (!data.success) {
+  if (!parsedData.success) {
     return res.json({
       message: "Incorrect Input",
     });
   }
-  const userId = 1;
-  const token = jwt.sign(
-    {
-      userId,
-    },
-    JWT_SECRET_KEY
-  );
 
-  res.json({
-    token,
-  });
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: parsedData.data?.email,
+      },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: existingUser.id,
+      },
+      JWT_SECRET_KEY
+    );
+
+    res.json({
+      token,
+    });
+  } catch (error: any) {
+    console.error("Signin error:", error);
+    res.status(500).json({
+      message: "Error signing in. Please try again.",
+      error: error.message,
+    });
+  }
 });
 
 app.post("/room/:id", middleware, (req, res) => {
