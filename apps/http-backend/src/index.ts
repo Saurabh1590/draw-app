@@ -6,8 +6,8 @@ import {
   SignInSchema,
   CreateRoomSchema,
 } from "@repo/common/types";
-import { prismaClient } from "@repo/database/client";
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+import { prisma } from "@repo/db/client";
 
 const app = express();
 app.use(express.json());
@@ -23,7 +23,7 @@ app.post("/signup", async (req, res) => {
   }
 
   try {
-    const User = await prismaClient.user.create({
+    const User = await prisma.user.create({
       data: {
         email: parsedData.data?.email,
         password: parsedData.data?.password,
