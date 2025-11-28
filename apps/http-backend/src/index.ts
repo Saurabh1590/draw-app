@@ -25,7 +25,7 @@ app.post("/signup", async (req, res) => {
 
   try {
     // Hash the password before storing
-    const hashedPassword = await bcrypt.hash(parsedData.data?.password || "", 10);
+    const hashedPassword = await bcrypt.hash(parsedData.data?.password, 10);
 
     const user = await prisma.user.create({
       data: {
