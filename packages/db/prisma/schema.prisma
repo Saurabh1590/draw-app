@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "./generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -40,4 +40,5 @@ model Chat {
   room          Room      @relation(fields: [roomId], references: [id])
   user          User      @relation(fields: [userId], references: [id])
 }
+
 
